@@ -6,14 +6,10 @@ import java.util.HashMap;
 import java.util.List;
 
 public class VideoclubeManager {
-    HashMap<String, Filme> filmes = new HashMap<>();
+    static HashMap<String, Filme> filmes = new HashMap<>();
 
     String nome, produtora,genero,escolha;
     int ano, resposta, resposta2;
-    public VideoclubeManager(){
-        this.filmes = new HashMap<>();
-
-    }
 
     void InserirFilmes(){
         int menu = 0;
@@ -51,20 +47,47 @@ public class VideoclubeManager {
     }
 
     void consultarFilmes(){
-        int menu = 0,pergunta;
-        String chave;
+        int menu = 0,pergunta, subMenu=0;
         do{
-            chave = JOptionPane.showInputDialog(null,"Indica o nome do filme que deseja procurar","Procurar filmes",JOptionPane.QUESTION_MESSAGE);
-            if (!filmes.containsKey(chave)){
-                JOptionPane.showMessageDialog(null,"O filme não existe", "Erro",JOptionPane.ERROR_MESSAGE);
-            }else {
-                mostrarConsulta(chave);
+            subMenu = menuConsultarFilmes();
+
+            if (subMenu ==1){
+                procurarNome();
+            }else if (subMenu ==2) {
+                listaNome();
             }
             pergunta = JOptionPane.showConfirmDialog(null, "Voltar a procurar?", "Inserir novamente?", JOptionPane.YES_NO_OPTION);
             if (pergunta == JOptionPane.NO_OPTION){
                 menu = 1;
             }
         }while (menu != 1);
+    }
+    private Integer menuConsultarFilmes(){
+        Object [] menuConsultFilme = {"Procurar pelo nome","Procurar pela lista de filmes"};
+        if (!filmes.isEmpty()){
+            resposta = JOptionPane.showOptionDialog(null,"Escolhe a opção pretendida","Procurar filmes",0,JOptionPane.QUESTION_MESSAGE,null,menuConsultFilme,menuConsultFilme[0]);
+            if (resposta == 0){
+                return 1;
+            }else return 2;
+        }else {
+            JOptionPane.showMessageDialog(null,"Lista vazia, adiciona primeiro um filme no menu principal","Procurar filmes",JOptionPane.INFORMATION_MESSAGE);
+            return 3;
+        }
+    }
+    private void procurarNome(){
+        String chave;
+        chave = JOptionPane.showInputDialog(null,"Indica o nome do filme que deseja procurar","Procurar filmes",JOptionPane.QUESTION_MESSAGE);
+        if (!filmes.containsKey(chave)){
+            JOptionPane.showMessageDialog(null,"O filme não existe", "Erro",JOptionPane.ERROR_MESSAGE);
+        }else {
+            mostrarConsulta(chave);
+        }
+
+    }
+    private void listaNome(){
+        Object [] nomeFilmes = filmes.keySet().toArray();
+        escolha = (String) JOptionPane.showInputDialog(null,"Esolha o filme para mostrar informação completa", "Procurar Contacto",JOptionPane.QUESTION_MESSAGE,null,nomeFilmes,nomeFilmes[0]);
+        mostrarConsulta(escolha);
     }
 
     private void mostrarConsulta(String chave){
@@ -109,11 +132,8 @@ public class VideoclubeManager {
         Object [] menuAtualizarFilmes = {"Nome", "Ano","Produtora","Gênero","Sair"};
         String novoNome, novoGenero, novaProdutora;
         int novoAno;
-        genero = filmes.get(nomeFilme).getGenero();
-        produtora = filmes.get(nomeFilme).getProdutora();
-        ano = filmes.get(nomeFilme).getAno();
 
-        Filme filmeExistente = new Filme(nomeFilme,genero,produtora,ano);
+        Filme filmeExistente = filmes.get(escolha);
 
         int opcao = 0;
         do {
@@ -121,8 +141,10 @@ public class VideoclubeManager {
             switch (opcao){
                 case 0:
                     novoNome = JOptionPane.showInputDialog(null,"Qual o novo nome que desejas atribuir ao filme "+nomeFilme,"Atualizar Nome",JOptionPane.QUESTION_MESSAGE);
+
+                    filmes.remove(nomeFilme);
                     filmeExistente.setNome(novoNome);
-                    filmes.put(nomeFilme,filmeExistente);
+                    filmes.put(filmeExistente.getNome(),filmeExistente);
                     break;
                 case 1:
                     novoAno = Integer.parseInt(JOptionPane.showInputDialog(null,"Qual o novo Ano que desejas atribuir ao filme "+nomeFilme,"Atualizar Ano",JOptionPane.QUESTION_MESSAGE));
@@ -218,6 +240,7 @@ public class VideoclubeManager {
             nota = (Integer)JOptionPane.showInputDialog(null, "Com que notas pretendes avaliar o filme "+nomeFilme+".","Avaliar Filme",JOptionPane.QUESTION_MESSAGE,null,escalaAvaliacao,escalaAvaliacao[0]);
             darNotaFilme.adicionarClassificacao(nota);
             JOptionPane.showMessageDialog(null,"O filme "+nomeFilme+" recebeu a classificação de "+nota+".","Avaliar Filme",JOptionPane.INFORMATION_MESSAGE);
+
 
 
     }
